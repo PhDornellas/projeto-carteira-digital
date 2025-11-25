@@ -1,4 +1,4 @@
-# projeto-carteira-digital
+# Projeto-Carteira-Digital
 Este projeto é um template inicial para implementar uma API de Carteira Digital na disciplina de Banco de Dados:
 
 Tecnologias utilizadas:
