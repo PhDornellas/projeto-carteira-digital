@@ -21,4 +21,5 @@ Fazer depósitos
 Fazer saques (com taxa e validação da chave privada)
 
 Fazer conversão entre moedas (usando cotação da Coinbase)
+
 Fazer transferência entre carteiras
