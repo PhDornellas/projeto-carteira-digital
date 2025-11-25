@@ -4,8 +4,11 @@ Este projeto é um template inicial para implementar uma API de Carteira Digital
 Tecnologias utilizadas:
 
 FastAPI
+
 PostgreSQL
+
 Python
+
 Integração com API pública da Coinbase para conversão de moedas
 
 A carteira permite:
