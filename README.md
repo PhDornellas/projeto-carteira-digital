@@ -9,6 +9,8 @@ PostgreSQL
 
 Python
 
+Git
+
 Integração com API pública da Coinbase para conversão de moedas
 
 A carteira permite:
