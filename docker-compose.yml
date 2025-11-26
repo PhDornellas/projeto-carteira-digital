@@ -1,0 +1,29 @@
+services:
+  db:
+    build: ./docker/db
+    container_name: carteira_db
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: wallet_homolog
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  api:
+    build: .
+    container_name: carteira_api
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: wallet_api_homolog
+      DB_PASSWORD: api123
+      DB_NAME: wallet_homolog
+    ports:
+      - "8000:8000"
+
+volumes:
+  postgres_data:
