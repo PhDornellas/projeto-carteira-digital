@@ -1,18 +1,18 @@
 services:
   db:
-    build: ./docker/db
+    image: cauebaia/carteira-db:1.0.0
     container_name: carteira_db
     ports:
       - "5433:5432"
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: wallet_api_homolog
+      POSTGRES_PASSWORD: api123
       POSTGRES_DB: wallet_homolog
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
   api:
-    build: .
+    image: cauebaia/carteira-api:1.0.0
     container_name: carteira_api
     depends_on:
       - db
