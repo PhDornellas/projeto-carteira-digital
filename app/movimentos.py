@@ -74,6 +74,10 @@ def realizar_saque(endereco: str, moeda: str, valor: float, chave_privada: str):
         carteira_id = carteira[0]
         hash_no_banco = carteira[1]
 
+
+
+
+
         if hash_chave_privada(chave_privada) != hash_no_banco:
             raise HTTPException(401, "Chave privada inválida")
 

@@ -22,6 +22,10 @@ def transferir_valores(endereco_origem: str, endereco_destino: str, moeda: str, 
     try:
         cur.execute(GET_CARTEIRA_ID, (endereco_origem,))
         origem = cur.fetchone()
+
+        if endereco_origem == endereco_destino:
+            raise HTTPException(400, "Não é permitido transferir para a mesma carteira")
+
         if not origem:
             raise HTTPException(404, "Carteira de origem não encontrada")
 
