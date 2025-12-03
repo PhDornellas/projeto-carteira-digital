@@ -81,10 +81,8 @@ def converter_moedas(endereco: str, moeda_origem: str, moeda_destino: str, valor
         else:
             cur.execute(CRIAR_SALDO, (carteira_id, moeda_destino_id, valor_convertido))
 
-        # atualizar saldo da moeda de origem
         cur.execute(ATUALIZAR_SALDO, (novo_saldo_origem, saldo_origem_id))
 
-        # registrar no histórico
         cur.execute(REGISTRAR_CONVERSAO, (
             carteira_id,
             moeda_origem_id,
