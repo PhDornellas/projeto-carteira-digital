@@ -20,7 +20,6 @@ def transferir_valores(endereco_origem: str, endereco_destino: str, moeda: str, 
     cur = conn.cursor()
 
     try:
-        # Origem
         cur.execute(GET_CARTEIRA_ID, (endereco_origem,))
         origem = cur.fetchone()
         if not origem:
@@ -32,7 +31,6 @@ def transferir_valores(endereco_origem: str, endereco_destino: str, moeda: str, 
         if hash_chave_privada(chave_privada) != hash_origem:
             raise HTTPException(401, "Chave privada inválida para carteira de origem")
 
-        # Destino
         cur.execute(GET_CARTEIRA_ID, (endereco_destino,))
         destino = cur.fetchone()
         if not destino:
@@ -40,7 +38,6 @@ def transferir_valores(endereco_origem: str, endereco_destino: str, moeda: str, 
 
         destino_id = destino[0]
 
-        # Moeda
         cur.execute(GET_MOEDA, (moeda,))
         moeda_row = cur.fetchone()
         if not moeda_row:
@@ -48,7 +45,6 @@ def transferir_valores(endereco_origem: str, endereco_destino: str, moeda: str, 
 
         moeda_id = moeda_row[0]
 
-        # Saldo origem
         cur.execute(GET_SALDO, (origem_id, moeda_id))
         saldo_origem_row = cur.fetchone()
         if not saldo_origem_row:
@@ -68,7 +64,6 @@ def transferir_valores(endereco_origem: str, endereco_destino: str, moeda: str, 
 
         novo_saldo_origem = saldo_origem - total
 
-        # Saldo destino
         cur.execute(GET_SALDO, (destino_id, moeda_id))
         saldo_destino_row = cur.fetchone()
 
@@ -80,10 +75,8 @@ def transferir_valores(endereco_origem: str, endereco_destino: str, moeda: str, 
         else:
             cur.execute(CRIAR_SALDO, (destino_id, moeda_id, valor_decimal))
 
-        # Debitar origem
         cur.execute(ATUALIZAR_SALDO, (novo_saldo_origem, saldo_origem_id))
 
-        # Registrar histórico
         cur.execute(REGISTRAR_TRANSFERENCIA, (
             origem_id,
             destino_id,

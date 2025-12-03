@@ -21,7 +21,6 @@ def converter_moedas(endereco: str, moeda_origem: str, moeda_destino: str, valor
     cur = conn.cursor()
 
     try:
-        # 1. Obter carteira e validar chave privada
         cur.execute(GET_CARTEIRA_ID, (endereco,))
         carteira = cur.fetchone()
         if not carteira:
@@ -33,7 +32,6 @@ def converter_moedas(endereco: str, moeda_origem: str, moeda_destino: str, valor
         if hash_chave_privada(chave_privada) != hash_no_banco:
             raise HTTPException(401, "Chave privada inválida")
 
-        # 2. Obter IDs da moeda de origem e destino
         cur.execute(GET_MOEDA, (moeda_origem,))
         moeda_origem_row = cur.fetchone()
         if not moeda_origem_row:
@@ -46,7 +44,6 @@ def converter_moedas(endereco: str, moeda_origem: str, moeda_destino: str, valor
             raise HTTPException(404, "Moeda de destino inválida")
         moeda_destino_id = moeda_destino_row[0]
 
-        # 3. Buscar saldo da moeda de origem
         cur.execute(GET_SALDO, (carteira_id, moeda_origem_id))
         saldo_origem_row = cur.fetchone()
         if not saldo_origem_row:
@@ -57,7 +54,6 @@ def converter_moedas(endereco: str, moeda_origem: str, moeda_destino: str, valor
 
         valor_decimal = Decimal(str(valor))
 
-        # 4. Obter cotação da Coinbase
         url = f"https://api.coinbase.com/v2/prices/{moeda_origem}-{moeda_destino}/spot"
         response = requests.get(url)
         if response.status_code != 200:
@@ -65,18 +61,15 @@ def converter_moedas(endereco: str, moeda_origem: str, moeda_destino: str, valor
 
         cotacao = Decimal(response.json()["data"]["amount"])
 
-        # 5. Calcular valor convertido e taxa
         taxa_percentual = Decimal(str(os.getenv("TAXA_CONVERSAO_PERCENTUAL")))
         taxa = valor_decimal * taxa_percentual
         valor_convertido = (valor_decimal - taxa) * cotacao  # taxa desconta da moeda de origem
 
-        # 6. Verificar saldo suficiente
         if saldo_origem < valor_decimal:
             raise HTTPException(400, "Saldo insuficiente")
 
         novo_saldo_origem = saldo_origem - valor_decimal
 
-        # 7. Atualizar saldo da moeda destino
         cur.execute(GET_SALDO, (carteira_id, moeda_destino_id))
         saldo_destino_row = cur.fetchone()
 
@@ -88,10 +81,10 @@ def converter_moedas(endereco: str, moeda_origem: str, moeda_destino: str, valor
         else:
             cur.execute(CRIAR_SALDO, (carteira_id, moeda_destino_id, valor_convertido))
 
-        # 8. Atualizar saldo da moeda de origem
+        # atualizar saldo da moeda de origem
         cur.execute(ATUALIZAR_SALDO, (novo_saldo_origem, saldo_origem_id))
 
-        # 9. Registrar histórico
+        # registrar no histórico
         cur.execute(REGISTRAR_CONVERSAO, (
             carteira_id,
             moeda_origem_id,
